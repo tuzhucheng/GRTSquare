@@ -15,6 +15,11 @@ TabbedPane {
         Routes {}
     }
     Tab {
+        title: Constants.STOPS
+        imageSource: "icons/ic_stops.png"
+        Stops {}
+    }
+    Tab {
         title: Constants.SETTINGS
         imageSource: "icons/ic_settings.png"
         Settings {}

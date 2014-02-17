@@ -31,4 +31,29 @@
         <translation type="unfinished"></translation>
     </message>
 </context>
+<context>
+    <name>StopDetails</name>
+    <message>
+        <source>Future</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Current</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>StopDetailsCurrent</name>
+    <message>
+        <source>Current time:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Stops</name>
+    <message>
+        <source>%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
 </TS>

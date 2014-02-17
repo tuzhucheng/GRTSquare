@@ -29,6 +29,12 @@ CREATE_CALENDAR_TABLE_SQL = """CREATE TABLE calendar
     saturday INTEGER,
     sunday INTEGER);"""
 
+CREATE_CALENDAR_DATES_TABLE_SQL = """CREATE TABLE calendar_dates
+    (_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    serviceId VARCHAR,
+    date VARCHAR,
+    exception_type INTEGER);"""
+
 CREATE_SHAPES_TABLE_SQL = """CREATE TABLE shapes
     (_id INTEGER PRIMARY KEY AUTOINCREMENT,
     shapeId INTEGER,
@@ -69,6 +75,9 @@ INSERT_INTO_CALENDAR_SQL = """INSERT INTO calendar
     (serviceId, startDate, endDate, monday, tuesday, wednesday, thursday, friday, saturday, sunday)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
 
+INSERT_INTO_CALENDAR_DATES_SQL = """INSERT INTO calendar_dates
+    (serviceId, date, exception_type) VALUES (?, ?, ?);"""
+
 INSERT_INTO_SHAPES_SQL = """INSERT INTO shapes
     (shapeId, shapePtLatitude, shapePtLongitude, shapePtSequence)
     VALUES (?, ?, ?, ?);"""
@@ -95,6 +104,7 @@ cursor = connection.cursor()
 cursor.execute(CREATE_ROUTES_TABLE_SQL)
 cursor.execute(CREATE_STOPS_TABLE_SQL)
 cursor.execute(CREATE_CALENDAR_TABLE_SQL)
+cursor.execute(CREATE_CALENDAR_DATES_TABLE_SQL)
 cursor.execute(CREATE_SHAPES_TABLE_SQL)
 cursor.execute(CREATE_TRIPS_TABLE_SQL)
 cursor.execute(CREATE_STOP_TIMES_TABLE_SQL)
@@ -128,6 +138,15 @@ with open(path) as csv:
         args = (fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6], \
                 fields[7], fields[8], fields[9])
         cursor.execute(INSERT_INTO_CALENDAR_SQL, args)
+
+# populate data in calendar_dates table
+path = os.path.join("gtfs", "calendar_dates.csv")
+with open(path) as csv:
+    next(csv)
+    for line in csv:
+        line = line[:-1]
+        fields = line.split(sep=",")
+        cursor.execute(INSERT_INTO_CALENDAR_DATES_SQL, (fields[0], fields[1], fields[2]))
 
 # populate data in shapes table
 path = os.path.join("gtfs", "shapes.csv")

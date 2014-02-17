@@ -1,6 +1,7 @@
 #include "applicationui.hpp"
 
 #include "Route.hpp"
+#include "Stop.hpp"
 
 #include <bb/cascades/Application>
 #include <bb/cascades/QmlDocument>
@@ -39,6 +40,7 @@ ApplicationUI::ApplicationUI(bb::cascades::Application *app) :
 	// Initialize the Group Data Model before setting up our QML Scene
 	// as the QML scene will bind to the data model
 	initDataModel();
+	initStopsDataModel();
 
     // Create scene document from main.qml asset, the parent is set
     // to ensure the document gets destroyed properly at shut down.
@@ -72,6 +74,12 @@ void ApplicationUI::initDataModel()
     // and instead just add a "ORDER BY" clause to SQL
     // m_dataModel->setSortingKeys(QStringList() << "routeNumber");
     m_dataModel->setGrouping(ItemGrouping::None);
+}
+
+void ApplicationUI::initStopsDataModel()
+{
+	m_stopsDataModel = new GroupDataModel(this);
+	m_stopsDataModel->setGrouping(ItemGrouping::None);
 }
 
 bool ApplicationUI::initDatabase()
@@ -135,9 +143,41 @@ void ApplicationUI::readRecords()
     }
 }
 
+void ApplicationUI::searchStops(const QString& query)
+{
+    SqlDataAccess *sqlda = new SqlDataAccess(DB_PATH);
+    const QString sqlQuery = "SELECT stopNumber, stopName FROM stops "
+    		" WHERE stopNumber LIKE \'" + query + "%\' ORDER BY stopNumber DESC";
+
+    QVariant result = sqlda->execute(sqlQuery);
+    if (!sqlda->hasError()) {
+        int recordsRead = 0;
+        m_stopsDataModel->clear();
+        if( !result.isNull() ) {
+            QVariantList list = result.value<QVariantList>();
+            recordsRead = list.size();
+            for(int i = 0; i < recordsRead; i++) {
+                QVariantMap map = list.at(i).value<QVariantMap>();
+                Stop *stop = new Stop(map["stopNumber"].toString(), map["stopName"].toString());
+                Q_UNUSED(stop);
+                m_stopsDataModel->insert(stop);
+            }
+        }
+
+        qDebug() << "Read " << recordsRead << " records succeeded";
+    } else {
+        alert(tr("Read records failed: %1").arg(sqlda->error().errorMessage()));
+    }
+}
+
 GroupDataModel* ApplicationUI::dataModel() const
 {
     return m_dataModel;
+}
+
+GroupDataModel* ApplicationUI::stopsDataModel() const
+{
+	return m_stopsDataModel;
 }
 
 void ApplicationUI::onSystemLanguageChanged()

@@ -1,5 +1,5 @@
 1
-21
+27
 constants.js
 grtdata/grt.db
 grtdata/gtfs/agency.csv
@@ -18,6 +18,12 @@ Home.qml
 icons/ic_home.png
 icons/ic_routes.png
 icons/ic_settings.png
+icons/ic_stops.png
 main.qml
+RouteDetails.qml
 Routes.qml
 Settings.qml
+StopDetails.qml
+StopDetailsCurrent.qml
+StopDetailsFuture.qml
+Stops.qml
