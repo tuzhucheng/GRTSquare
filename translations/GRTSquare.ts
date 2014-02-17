@@ -25,14 +25,7 @@
     </message>
 </context>
 <context>
-    <name>ErrorPage</name>
-    <message>
-        <source>ERROR: Database Initialization Failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>routes</name>
+    <name>Routes</name>
     <message>
         <source>%1 - %2</source>
         <translation type="unfinished"></translation>

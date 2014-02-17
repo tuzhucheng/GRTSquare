@@ -52,7 +52,10 @@ lupdate_inclusion {
              $$quote($$BASEDIR/../assets/grtdata/*.qs) \
              $$quote($$BASEDIR/../assets/grtdata/gtfs/*.qml) \
              $$quote($$BASEDIR/../assets/grtdata/gtfs/*.js) \
-             $$quote($$BASEDIR/../assets/grtdata/gtfs/*.qs)
+             $$quote($$BASEDIR/../assets/grtdata/gtfs/*.qs) \
+             $$quote($$BASEDIR/../assets/icons/*.qml) \
+             $$quote($$BASEDIR/../assets/icons/*.js) \
+             $$quote($$BASEDIR/../assets/icons/*.qs)
 
     HEADERS +=  $$quote($$BASEDIR/../src/*.h) \
              $$quote($$BASEDIR/../src/*.h++) \

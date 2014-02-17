@@ -1,7 +1,6 @@
 1
-22
+21
 constants.js
-ErrorPage.qml
 grtdata/grt.db
 grtdata/gtfs/agency.csv
 grtdata/gtfs/calendar.csv
@@ -15,10 +14,10 @@ grtdata/gtfs/trips.csv
 grtdata/routes.csv
 grtdata/sqlite_populate.py
 grtdata/stops.csv
-home.qml
+Home.qml
+icons/ic_home.png
+icons/ic_routes.png
+icons/ic_settings.png
 main.qml
-map.qml
-PageBase.qml
-routes.qml
-settings.qml
-stops.qml
+Routes.qml
+Settings.qml
