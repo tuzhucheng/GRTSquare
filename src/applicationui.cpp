@@ -33,7 +33,7 @@ using namespace bb::cascades;
 using namespace bb::data;
 using namespace bb::system;
 
-const QString DB_PATH = "./data/grtSquareDatabase.db";
+const QString DB_PATH = "app/native/assets/grtdata/grt.db";
 
 ApplicationUI::ApplicationUI(bb::cascades::Application *app) :
         QObject(app)
@@ -76,8 +76,6 @@ ApplicationUI::ApplicationUI(bb::cascades::Application *app) :
     // and that all the required tables and initial data exists
     const bool dbInited = initDatabase();
 
-    //qDebug() << dbInited;
-
     // Inform the UI if the database was successfully initialized or not
     root->setProperty("databaseOpen", dbInited);
 }
@@ -86,56 +84,10 @@ void ApplicationUI::initDataModel()
 {
     // Note: The Group Data Model is joining this objects tree as a child (for memory management)
     m_dataModel = new GroupDataModel(this);
-    m_dataModel->setSortingKeys(QStringList() << "routeNumber");
+    // GroupDataModel does not sorting by an integer key, so we don't we don't use sorting keys
+    // and instead just add a "ORDER BY" clause to SQL
+    // m_dataModel->setSortingKeys(QStringList() << "routeNumber");
     m_dataModel->setGrouping(ItemGrouping::None);
-}
-
-bool ApplicationUI::createTable(SqlDataAccess *sqlda, const QString &sql)
-{
-	sqlda->execute(sql);
-	if(!sqlda->hasError()) {
-		qDebug() << "Table created.";
-		return true;
-	} else {
-		const DataAccessError error = sqlda->error();
-		alert(tr("Create table error: %1").arg(error.errorMessage()));//.arg(error.text()));
-		return false;
-	}
-}
-
-void ApplicationUI::buildDatabase()
-{
-	SqlDataAccess *sqlda = new SqlDataAccess(DB_PATH);
-	sqlda->execute("DROP TABLE IF EXISTS routes");
-	if(!sqlda->hasError()) {
-		qDebug() << "Table dropped.";
-	} else {
-		const DataAccessError error = sqlda->error();
-		alert(tr("Drop table error: %1").arg(error.errorMessage()));//.arg(error.text()));
-	}
-
-	sqlda->execute("DROP TABLE IF EXISTS trips");
-	if(!sqlda->hasError()) {
-		qDebug() << "Table dropped.";
-	} else {
-		const DataAccessError error = sqlda->error();
-		alert(tr("Drop table error: %1").arg(error.errorMessage()));//.arg(error.text()));
-	}
-
-	const QString createRoutesSQL = "CREATE TABLE routes "
-							  "  (routeID INTEGER PRIMARY KEY AUTOINCREMENT, "
-							  "  routeLongName VARCHAR, "
-							  "  routeNumber INTEGER);";
-	createTable(sqlda, createRoutesSQL);
-	buildRoutes(sqlda);
-
-	const QString createTripsSQL = "CREATE TABLE trips "
-							  " (tripID INTEGER PRIMARY KEY AUTOINCREMENT, "
-							  " grtTripID VARCHAR, "
-							  " routeNumber INTEGER, "
-							  " tripHeadSign VARCHAR); ";
-	createTable(sqlda, createTripsSQL);
-	buildTrips(sqlda);
 }
 
 bool ApplicationUI::initDatabase()
@@ -155,85 +107,12 @@ bool ApplicationUI::initDatabase()
     return true;
 }
 
-void ApplicationUI::buildTrips(SqlDataAccess *sqlda)
-{
-	QFile data("app/native/assets/grtdata/gtfs/trips.txt");
-	if (data.open(QIODevice::ReadOnly)) {
-		QTextStream in(&data);
-		QString line, grtTripID, routeNumber, tripHeadSign;
-		QStringList list;
-		int atLine = 0;
-		while (!in.atEnd()) {
-			line = in.readLine(0);
-			if (atLine != 0) {
-				list = line.split(",");
-				grtTripID = list[6];
-				routeNumber = list[1];
-				tripHeadSign = list[3];
-				QVariantList trip;
-				trip << grtTripID << routeNumber << tripHeadSign;
-				sqlda->execute("INSERT INTO trips"
-						"    (grtTripID, routeNumber, tripHeadSign) "
-						"    VALUES (:grtTripID, :routeNumber, :tripHeadSign)", trip);
-				if(!sqlda->hasError()) {
-					// qDebug() << "success";
-				} else {
-					// If 'exec' fails, error information can be accessed via the error function
-					// the last error is reset every time exec is called.
-					const DataAccessError error = sqlda->error();
-					alert(tr("Create record error: %1").arg(error.errorMessage()));
-				}
-			}
-			atLine++;
-		}
-	} else {
-		qDebug() << "File open operation failed.";
-	}
-	data.close();
-}
-
-void ApplicationUI::buildRoutes(SqlDataAccess *sqlda)
-{
-	QFile data("app/native/assets/grtdata/gtfs/routes.txt");
-	if (data.open(QIODevice::ReadOnly)) {
-		QTextStream in(&data);
-		QString line, routeLongName, routeNumber;
-		QStringList list;
-		int atLine = 0;
-		while (!in.atEnd()) {
-			line = in.readLine(0);
-			if (atLine != 0) {
-				list = line.split(",");
-				routeLongName = list[0];
-				routeNumber = list[1];
-				QVariantList route;
-				route << routeLongName << routeNumber;
-				sqlda->execute("INSERT INTO routes"
-						"    (routeLongName, routeNumber) "
-						"    VALUES (:routeLongName, :routeNumber)", route);
-				if(!sqlda->hasError()) {
-					// qDebug() << "success";
-				} else {
-					// If 'exec' fails, error information can be accessed via the error function
-					// the last error is reset every time exec is called.
-					const DataAccessError error = sqlda->error();
-					alert(tr("Create record error: %1").arg(error.errorMessage()));
-				}
-			}
-			atLine++;
-		}
-	} else {
-		qDebug() << "File open operation failed.";
-	}
-	data.close();
-}
-
 void ApplicationUI::readRecords()
 {
     SqlDataAccess *sqlda = new SqlDataAccess(DB_PATH);
 
-    const QString sqlQuery = "SELECT routeID, routeLongName, routeNumber FROM routes "
-    		" WHERE routeNumber <= 202";
+    const QString sqlQuery = "SELECT routeName, routeNumber FROM routes "
+    		" WHERE routeNumber <= 202 ORDER BY routeNumber DESC";
 
     QVariant result = sqlda->execute(sqlQuery);
     if (!sqlda->hasError()) {
@@ -252,7 +131,7 @@ void ApplicationUI::readRecords()
             recordsRead = list.size();
             for(int i = 0; i < recordsRead; i++) {
                 QVariantMap map = list.at(i).value<QVariantMap>();
-                Route *route = new Route(map["routeID"].toString(), map["routeLongName"].toString(), map["routeNumber"].toString());
+                Route *route = new Route(map["routeName"].toString(), map["routeNumber"].toString());
                 Q_UNUSED(route);
                 //NOTE: When adding an object to a DataModel, the DataModel sets
                 //    itself as the parent of the object if no parent has already been

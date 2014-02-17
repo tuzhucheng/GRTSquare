@@ -55,7 +55,6 @@ public:
     ApplicationUI(bb::cascades::Application *app);
     virtual ~ApplicationUI() { }
     Q_INVOKABLE void readRecords();
-    Q_INVOKABLE void buildDatabase();
 private slots:
     void onSystemLanguageChanged();
 private:
@@ -73,9 +72,6 @@ private:
 
     void initDataModel();
     bool initDatabase();
-    bool createTable(SqlDataAccess *sqlda, const QString &sql);
-    void buildRoutes(SqlDataAccess *sqlda);
-    void buildTrips(SqlDataAccess *sqlda);
 
     // The data shown by the list view.
     GroupDataModel* m_dataModel;

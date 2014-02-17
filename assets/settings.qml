@@ -13,12 +13,4 @@ Container {
         horizontalAlignment: HorizontalAlignment.Center
         multiline: true
     }
-    
-    Button {
-        text: qsTr("Build Database")
-        horizontalAlignment: HorizontalAlignment.Center
-        onClicked: {
-            app.buildDatabase()
-        }
-    }
 }

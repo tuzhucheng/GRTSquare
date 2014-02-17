@@ -16,18 +16,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Drop table error: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Create table error: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Create record error: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Read records failed: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -46,18 +34,7 @@
 <context>
     <name>routes</name>
     <message>
-        <source>Retrieve</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>%1 - %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>settings</name>
-    <message>
-        <source>Build Database</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

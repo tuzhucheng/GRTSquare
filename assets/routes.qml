@@ -15,7 +15,7 @@ Container {
                 type: "item"
                 StandardListItem {
                     id: listItem
-                    title: qsTr("%1 - %2").arg(ListItemData.routeNumber).arg(ListItemData.routeLongName)
+                    title: qsTr("%1 - %2").arg(ListItemData.routeNumber).arg(ListItemData.routeName)
                     onTouch: {
                         if (event.isUp()) {
                             mySheet.open()
@@ -41,16 +41,11 @@ Container {
             }
         ]
         
-        
-    }
-    
-    Button {
-        horizontalAlignment: HorizontalAlignment.Center
-        
-        text: qsTr("Retrieve")
-        onClicked: {
-            app.readRecords(); // Refresh the list view.
+        onCreationCompleted: {
+            app.readRecords();
         }
+        
+        
     }
     
 }
