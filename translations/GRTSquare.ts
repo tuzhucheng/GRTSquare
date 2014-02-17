@@ -50,7 +50,14 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>%1</source>
+        <source>%1 - %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>settings</name>
+    <message>
+        <source>Build Database</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

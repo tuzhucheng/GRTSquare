@@ -26,3 +26,9 @@ x86/
 169.254.0.1
 #We really want the config.pri to be here a while
 #config.pri
+
+# GRT CSVs and database
+assets/grtdata/*.csv
+assets/grtdata/gtfs/*.csv
+assets/grtdata/*.db
+

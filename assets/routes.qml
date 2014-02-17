@@ -5,6 +5,7 @@ Container {
     bottomPadding: 30
     
     ListView {
+        id: routesListView
         horizontalAlignment: HorizontalAlignment.Center
         
         dataModel: app.dataModel
@@ -13,7 +14,29 @@ Container {
             ListItemComponent {
                 type: "item"
                 StandardListItem {
-                    title: qsTr("%1").arg(ListItemData.routeLongName)
+                    id: listItem
+                    title: qsTr("%1 - %2").arg(ListItemData.routeNumber).arg(ListItemData.routeLongName)
+                    onTouch: {
+                        if (event.isUp()) {
+                            mySheet.open()
+                        }
+                    }
+                    attachedObjects: Sheet {
+                        id: mySheet
+                        content: Page {
+                            Container {
+                                Label {
+                                    text: "This is a sheet"
+                                }
+                                Button {
+                                    text: "Close"
+                                    onClicked: {
+                                        mySheet.close()
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         ]
