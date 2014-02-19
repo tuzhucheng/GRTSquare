@@ -3,8 +3,6 @@
 
 #include <QObject>
 
-//#include <bb/cascades/TextArea>
-
 #include <bb/cascades/GroupDataModel>
 #include <bb/data/SqlDataAccess>
 
@@ -32,15 +30,17 @@ class ApplicationUI : public QObject
 {
     Q_OBJECT
 
-    // A property that is used by the list view in QML
-    Q_PROPERTY(bb::cascades::DataModel* dataModel READ dataModel CONSTANT)\
+    // Properties used by listviews in QML
+    Q_PROPERTY(bb::cascades::DataModel* routesDataModel READ routesDataModel CONSTANT)\
     Q_PROPERTY(bb::cascades::DataModel* stopsDataModel READ stopsDataModel CONSTANT)\
+    Q_PROPERTY(bb::cascades::DataModel* stoptimesDataModel READ stoptimesDataModel CONSTANT)\
 
 public:
     ApplicationUI(bb::cascades::Application *app);
     virtual ~ApplicationUI() { }
-    Q_INVOKABLE void readRecords();
+    Q_INVOKABLE void listRoutes();
     Q_INVOKABLE void searchStops(const QString &query);
+    Q_INVOKABLE void getNextBusTimes(const QString &stop);
 private slots:
     void onSystemLanguageChanged();
 private:
@@ -50,20 +50,20 @@ private:
     // To alert the user if something has gone wrong
     void alert(const QString &message);
 
-    // The getter method for the property
-    bb::cascades::GroupDataModel* dataModel() const;
+    // The getter method for properties
+    bb::cascades::GroupDataModel* routesDataModel() const;
     bb::cascades::GroupDataModel* stopsDataModel() const;
+    bb::cascades::GroupDataModel* stoptimesDataModel() const;
 
-    // UI Control Handles
-    //TextArea* pFetchGRTDataStatus;
-
-    void initDataModel();
+    void initRoutesDataModel();
     void initStopsDataModel();
+    void initStoptimesDataModel();
     bool initDatabase();
 
     // The data shown by the list view.
-    GroupDataModel* m_dataModel;
+    GroupDataModel* m_routesDataModel;
     GroupDataModel* m_stopsDataModel;
+    GroupDataModel* m_stoptimesDataModel;
 };
 
 #endif /* ApplicationUI_HPP_ */

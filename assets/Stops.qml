@@ -5,11 +5,15 @@ NavigationPane {
     id: stopsNavigationPane
     
     Page {
+        id: stopsPage
+        
         titleBar: TitleBar {
             title: qsTr(Constants.STOPS)
         }
         
         Container {
+            id: stopsMainContainer
+            
             TextField {
                 id: stopNumberTextField
                 hintText: "Enter stop number here (e.g. 1000)"
@@ -49,9 +53,12 @@ NavigationPane {
                             title: qsTr("%1").arg(ListItemData.stopNumber)
                             onTouch: {
                                 if (event.isUp()) {
-                                    var stopDetails = Qt.stopDetailsDefinition.createObject();
-                                    stopDetails.stopNumber = ListItemData.stopNumber;
-                                    stopDetails.stopName = ListItemData.stopName;
+                                    var component = Qt.createComponent("StopDetails.qml")
+                                    var properties = {
+                                        "stopNumber": ListItemData.stopNumber,
+                                        "stopName": ListItemData.stopName
+                                    }
+                                    var stopDetails = component.createObject(Qt.stopsPage.parent, properties);
                                     Qt.stopsNavigationPane.push(stopDetails);
                                 }
                             }
@@ -64,17 +71,11 @@ NavigationPane {
                 }
                 
                 onCreationCompleted: {
-                    Qt.stopDetailsDefinition = stopDetailsDefinition;
                     Qt.stopsNavigationPane = stopsNavigationPane;
+                    Qt.stopsPage = stopsPage;
                 }
             }
         }
-        attachedObjects: [
-            ComponentDefinition {
-                id: stopDetailsDefinition
-                source: "StopDetails.qml"
-            }
-        ]
     }
     
     onPopTransitionEnded: {

@@ -19,10 +19,6 @@
         <source>Read records failed: %1</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>The routes table is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>Routes</name>

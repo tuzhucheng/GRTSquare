@@ -14,7 +14,7 @@ NavigationPane {
                 id: routesListView
                 horizontalAlignment: HorizontalAlignment.Center
                 
-                dataModel: app.dataModel
+                dataModel: app.routesDataModel
                 
                 listItemComponents: [
                     ListItemComponent {
@@ -35,7 +35,7 @@ NavigationPane {
                 ]
                 
                 onCreationCompleted: {
-                    app.readRecords();
+                    app.listRoutes()
                     Qt.routeDetailsDefinition = routeDetailsDefinition;
                     Qt.routesNavigationPane = routesNavigationPane;
                 }

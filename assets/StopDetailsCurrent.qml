@@ -2,12 +2,35 @@ import bb.cascades 1.2
 import QtQuick 1.0
 
 Container {
+    id: stopDetailsCurrentContainer
+    
+    property string stopNumber
+    
     Label {
         text: qsTr("Current time:")
     }
     Label {
         id: currentTime
         text: Qt.formatDateTime(new Date(), "hh:mm:ss")
+    }
+    ListView {
+        id: stopDetailsCurrentListView
+        
+        dataModel: app.stoptimesDataModel
+        
+        listItemComponents: [
+            ListItemComponent {
+                StandardListItem {
+                    
+                }
+            }
+        ]
+        
+        onCreationCompleted: {
+            console.log("print stop number");
+            console.log(stopDetailsCurrentContainer.stopNumber);
+            app.getNextBusTimes(stopDetailsCurrentContainer.stopNumber);
+        }
     }
     
     attachedObjects: [
