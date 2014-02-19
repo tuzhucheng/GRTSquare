@@ -5,6 +5,7 @@ Page {
     
     property int stopNumber
     property string stopName
+    property string selectedOptionTab
     
     titleBar: TitleBar {
         title: qsTr("Stop " + stopNumber + " - " + stopName)
@@ -15,8 +16,6 @@ Page {
         property variant selectedTab;
         
         SegmentedControl {
-            id: segmentedControl
-            
             Option {
                 id: currentStopTimes
                 text: qsTr("Current")
@@ -27,8 +26,8 @@ Page {
                 text: qsTr("Future")
             }
             onCreationCompleted: {
-                var component = Qt.createComponent("StopDetailsCurrent.qml");
-                var currentContainer = component.createObject(segmentedControl.parent, {"stopNumber": stopDetailsPage.stopNumber.toString()});
+                var currentContainer = stopDetailsCurrent.createObject();
+                currentContainer.stopNumber = stopDetailsPage.stopNumber.toString();
                 stopDetailsContainer.add(currentContainer);
                 stopDetailsContainer.selectedTab = currentContainer;
             }
@@ -36,19 +35,28 @@ Page {
                 if (selectedOption == currentStopTimes) {
                 	console.log("current selected");
                     stopDetailsContainer.remove(stopDetailsContainer.selectedTab);
-                    var component = Qt.createComponent("StopDetailsCurrent.qml");
-                    var currentContainer = component.createObject(null, {"stopNumber": stopDetailsPage.stopNumber.toString()});
+                    var currentContainer = stopDetailsCurrent.createObject();
+                    currentContainer.stopNumber = stopDetailsPage.stopNumber.toString();
                     stopDetailsContainer.add(currentContainer);
                     stopDetailsContainer.selectedTab = currentContainer;
                 } else if (selectedOption == futureStopTimes) {
                     console.log("future selected");
                     stopDetailsContainer.remove(stopDetailsContainer.selectedTab);
-                    var component = Qt.createComponent("StopDetailsFuture.qml");
-                    var futureContainer = component.createObject(null, {"stopNumber": stopDetailsPage.stopNumber.toString()});
+                    var futureContainer = stopDetailsFuture.createObject();
                     stopDetailsContainer.add(futureContainer);
                     stopDetailsContainer.selectedTab = futureContainer;
                 }
             }
         }
+        attachedObjects: [
+            ComponentDefinition {
+                id: stopDetailsCurrent
+                source: "StopDetailsCurrent.qml"
+            },
+            ComponentDefinition {
+                id: stopDetailsFuture
+                source: "StopDetailsFuture.qml"
+            }
+        ]
     }
 }
