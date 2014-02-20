@@ -2,6 +2,7 @@
 
 #include "Route.hpp"
 #include "Stop.hpp"
+#include "StopTime.hpp"
 
 #include <bb/cascades/Application>
 #include <bb/cascades/QmlDocument>
@@ -247,8 +248,26 @@ void ApplicationUI::getNextBusTimes(const QString& stop)
 
 	sqlQuery = "SELECT trips.routeId, trips.tripHeadSign, stop_times.arrivalTime "
 			"FROM stop_times JOIN trips ON stop_times.tripId = trips.tripId "
-			"WHERE stop_times.stopId = \'" + stop + "\' AND (" + serviceIdSQLPortion + ")";
+			"WHERE stop_times.stopId = \'" + stop + "\' AND (" + serviceIdSQLPortion + ") "
+			"ORDER BY stop_times.arrivalTime DESC;";
 	qDebug() << sqlQuery;
+	result = sqlda->execute(sqlQuery);
+		if (!sqlda->hasError()) {
+	        if( !result.isNull() ) {
+	            QVariantList list = result.value<QVariantList>();
+	            int recordsRead = list.size();
+	            for(int i = 0; i < recordsRead; i++) {
+	                QVariantMap map = list.at(i).value<QVariantMap>();
+	                StopTime *stopTime = new StopTime(map["routeId"].toString(), map["arrivalTime"].toString());
+	                Q_UNUSED(stopTime);
+	                m_stoptimesDataModel->insert(stopTime);
+	            }
+	            qDebug() << "Read " << recordsRead << " stoptimes records succeeded";
+	        }
+		} else {
+	        alert(tr("Read records failed: %1").arg(sqlda->error().errorMessage()));
+	    }
+
 }
 
 GroupDataModel* ApplicationUI::routesDataModel() const

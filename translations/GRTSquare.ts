@@ -44,6 +44,10 @@
         <source>Current time:</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>%1 %2</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Stops</name>

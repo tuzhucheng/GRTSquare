@@ -20,17 +20,16 @@ Container {
         
         listItemComponents: [
             ListItemComponent {
+                type: "item"
                 StandardListItem {
-                    
+                    title: qsTr("%1 %2").arg(ListItemData.route).arg(ListItemData.time)
                 }
             }
         ]
-        
-        onCreationCompleted: {
-            console.log("print stop number");
-            console.log(stopDetailsCurrentContainer.stopNumber);
-            app.getNextBusTimes(stopDetailsCurrentContainer.stopNumber);
-        }
+    }
+    
+    onStopNumberChanged: {
+        app.getNextBusTimes(stopDetailsCurrentContainer.stopNumber);
     }
     
     attachedObjects: [

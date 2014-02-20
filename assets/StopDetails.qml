@@ -11,6 +11,10 @@ Page {
         title: qsTr("Stop " + stopNumber + " - " + stopName)
     }
     
+    onStopNumberChanged: {
+        stopDetailsContainer.selectedTab.stopNumber = stopNumber.toString();
+    }
+    
     Container {
         id: stopDetailsContainer
         property variant selectedTab;
@@ -27,16 +31,14 @@ Page {
             }
             onCreationCompleted: {
                 var currentContainer = stopDetailsCurrent.createObject();
-                currentContainer.stopNumber = stopDetailsPage.stopNumber.toString();
                 stopDetailsContainer.add(currentContainer);
-                stopDetailsContainer.selectedTab = currentContainer;
+                stopDetailsContainer.selectedTab = currentContainer;                
             }
             onSelectedOptionChanged: {
                 if (selectedOption == currentStopTimes) {
                 	console.log("current selected");
                     stopDetailsContainer.remove(stopDetailsContainer.selectedTab);
                     var currentContainer = stopDetailsCurrent.createObject();
-                    currentContainer.stopNumber = stopDetailsPage.stopNumber.toString();
                     stopDetailsContainer.add(currentContainer);
                     stopDetailsContainer.selectedTab = currentContainer;
                 } else if (selectedOption == futureStopTimes) {

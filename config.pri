@@ -5,22 +5,26 @@ device {
     CONFIG(debug, debug|release) {
         SOURCES +=  $$quote($$BASEDIR/src/Route.cpp) \
                  $$quote($$BASEDIR/src/Stop.cpp) \
+                 $$quote($$BASEDIR/src/StopTime.cpp) \
                  $$quote($$BASEDIR/src/applicationui.cpp) \
                  $$quote($$BASEDIR/src/main.cpp)
 
         HEADERS +=  $$quote($$BASEDIR/src/Route.hpp) \
                  $$quote($$BASEDIR/src/Stop.hpp) \
+                 $$quote($$BASEDIR/src/StopTime.hpp) \
                  $$quote($$BASEDIR/src/applicationui.hpp)
     }
 
     CONFIG(release, debug|release) {
         SOURCES +=  $$quote($$BASEDIR/src/Route.cpp) \
                  $$quote($$BASEDIR/src/Stop.cpp) \
+                 $$quote($$BASEDIR/src/StopTime.cpp) \
                  $$quote($$BASEDIR/src/applicationui.cpp) \
                  $$quote($$BASEDIR/src/main.cpp)
 
         HEADERS +=  $$quote($$BASEDIR/src/Route.hpp) \
                  $$quote($$BASEDIR/src/Stop.hpp) \
+                 $$quote($$BASEDIR/src/StopTime.hpp) \
                  $$quote($$BASEDIR/src/applicationui.hpp)
     }
 }
@@ -29,11 +33,13 @@ simulator {
     CONFIG(debug, debug|release) {
         SOURCES +=  $$quote($$BASEDIR/src/Route.cpp) \
                  $$quote($$BASEDIR/src/Stop.cpp) \
+                 $$quote($$BASEDIR/src/StopTime.cpp) \
                  $$quote($$BASEDIR/src/applicationui.cpp) \
                  $$quote($$BASEDIR/src/main.cpp)
 
         HEADERS +=  $$quote($$BASEDIR/src/Route.hpp) \
                  $$quote($$BASEDIR/src/Stop.hpp) \
+                 $$quote($$BASEDIR/src/StopTime.hpp) \
                  $$quote($$BASEDIR/src/applicationui.hpp)
     }
 }
