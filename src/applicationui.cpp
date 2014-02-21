@@ -9,6 +9,7 @@
 #include <bb/cascades/AbstractPane>
 #include <bb/cascades/LocaleHandler>
 #include <bb/data/SqlDataAccess>
+#include <bb/data/SqlConnection>
 #include <bb/data/DataAccessError>
 #include <bb/system/SystemDialog>
 
@@ -39,6 +40,8 @@ ApplicationUI::ApplicationUI(bb::cascades::Application *app) :
     // initial load
     onSystemLanguageChanged();
 
+    initDatabase();
+
 	// Initialize the Group Data Model before setting up our QML Scene
 	// as the QML scene will bind to the data model
 	initRoutesDataModel();
@@ -60,13 +63,6 @@ ApplicationUI::ApplicationUI(bb::cascades::Application *app) :
 
     // Set created root object as the application scene
     app->setScene(root);
-
-    // Initialize the database, ensure a connection can be established
-    // and that all the required tables and initial data exists
-    const bool dbInited = initDatabase();
-
-    // Inform the UI if the database was successfully initialized or not
-    root->setProperty("databaseOpen", dbInited);
 }
 
 void ApplicationUI::initRoutesDataModel()
@@ -75,7 +71,7 @@ void ApplicationUI::initRoutesDataModel()
 	m_routesDataModel = new GroupDataModel(this);
     // GroupDataModel does not sorting by an integer key, so we don't we don't use sorting keys
     // and instead just add a "ORDER BY" clause to SQL
-    // m_dataModel->setSortingKeys(QStringList() << "routeNumber");
+    m_routesDataModel->setSortingKeys(QStringList() << "routeNumber");
 	m_routesDataModel->setGrouping(ItemGrouping::None);
 }
 
@@ -88,91 +84,109 @@ void ApplicationUI::initStopsDataModel()
 void ApplicationUI::initStoptimesDataModel()
 {
 	m_stoptimesDataModel = new GroupDataModel(this);
+	m_stoptimesDataModel->setSortingKeys(QStringList() << "route" << "time");
 	m_stoptimesDataModel->setGrouping(ItemGrouping::ByFullValue);
 }
 
 bool ApplicationUI::initDatabase()
 {
-	QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE");
-	database.setDatabaseName(DB_PATH);
+    // establish connection thread to database
+    sqlConnector = new SqlConnection(DB_PATH, this);
 
-    // If we cannot open a connection to the database, then fail initialization
-    // and display an error message
-    if (database.open() == false) {
-        const QSqlError error = database.lastError();
-        alert(tr("Error opening connection to the database: %1").arg(error.text()));
-        qDebug() << "\nDatabase NOT opened.";
-        return false;
+    // use signals and slots to get results when data is ready
+    bool connectStatus = QObject::connect(sqlConnector, SIGNAL(reply(const bb::data::DataAccessReply&)),
+            this, SLOT(onLoadResultData(const bb::data::DataAccessReply&)));
+
+    if (connectStatus) {
+    	qDebug() << "DB Connection is successful";
+    	return true;
+    } else {
+    	qDebug() << "SQL Connector signals and slots not connected.";
+    	return false;
     }
+}
 
-    return true;
+void ApplicationUI::onLoadResultData(const DataAccessReply& reply)
+{
+	if (reply.hasError()) {
+		qDebug() << "Error while retrieving data with reply id " + reply.id();
+	} else {
+		QVariant result;
+		if (reply.id() == 1) {
+			result = reply.result();
+			listRoutesBuildModel(result);
+		} else if (reply.id() == 2) {
+			result = reply.result();
+			searchStopsBuildModel(result);
+		} else if (reply.id() == 3) {
+			result = reply.result();
+			getNextBusTimesBuildModel(result);
+		}
+	}
 }
 
 void ApplicationUI::listRoutes()
 {
-    SqlDataAccess *sqlda = new SqlDataAccess(DB_PATH);
+	const QString sqlQuery = "SELECT routeName, routeNumber FROM routes "
+    		" WHERE routeNumber <= ?";
+			// " ORDER BY routeNumber DESC";
 
-    const QString sqlQuery = "SELECT routeName, routeNumber FROM routes "
-    		" WHERE routeNumber <= 202 ORDER BY routeNumber DESC";
+	QVariantList args;
+	args << 202;
 
-    QVariant result = sqlda->execute(sqlQuery);
-    if (!sqlda->hasError()) {
-        int recordsRead = 0;
-        // The data will be displayed in a group data model
-        // Clear any previous reads from the data model first
-        m_routesDataModel->clear();
-        if( !result.isNull() ) {
-            QVariantList list = result.value<QVariantList>();
-            recordsRead = list.size();
-            for(int i = 0; i < recordsRead; i++) {
-                QVariantMap map = list.at(i).value<QVariantMap>();
-                Route *route = new Route(map["routeName"].toString(), map["routeNumber"].toString());
-                Q_UNUSED(route);
-                //NOTE: When adding an object to a DataModel, the DataModel sets
-                //    itself as the parent of the object if no parent has already been
-                //    set. Therefore, when clearing or removing an item from the data model
-                //    the data model will destroy the object if it is the parent of the object.
-                m_routesDataModel->insert(route);
-            }
-        }
+    sqlConnector->execute(sqlQuery, args, 1);
+}
 
-        qDebug() << "Read " << recordsRead << " records succeeded";
-    } else {
-        alert(tr("Read records failed: %1").arg(sqlda->error().errorMessage()));
-    }
+void ApplicationUI::listRoutesBuildModel(const QVariant& result)
+{
+	m_routesDataModel->clear();
+	int recordsRead = 0;
+	if( !result.isNull() ) {
+		QVariantList list = result.value<QVariantList>();
+		recordsRead = list.size();
+		for(int i = 0; i < recordsRead; i++) {
+			QVariantMap map = list.at(i).value<QVariantMap>();
+			Route *route = new Route(map["routeName"].toString(), map["routeNumber"].toInt());
+			Q_UNUSED(route);
+			//NOTE: When adding an object to a DataModel, the DataModel sets
+			//    itself as the parent of the object if no parent has already been
+			//    set. Therefore, when clearing or removing an item from the data model
+			//    the data model will destroy the object if it is the parent of the object.
+			m_routesDataModel->insert(route);
+		}
+	}
+	qDebug() << "Read " << recordsRead << " records succeeded";
 }
 
 void ApplicationUI::searchStops(const QString& query)
 {
-    SqlDataAccess *sqlda = new SqlDataAccess(DB_PATH);
     const QString sqlQuery = "SELECT stopNumber, stopName FROM stops "
     		" WHERE stopNumber LIKE \'" + query + "%\' ORDER BY stopNumber DESC";
+    QVariantList args = QList<QVariant>();
 
-    QVariant result = sqlda->execute(sqlQuery);
-    if (!sqlda->hasError()) {
-        int recordsRead = 0;
-        m_stopsDataModel->clear();
-        if( !result.isNull() ) {
-            QVariantList list = result.value<QVariantList>();
-            recordsRead = list.size();
-            for(int i = 0; i < recordsRead; i++) {
-                QVariantMap map = list.at(i).value<QVariantMap>();
-                Stop *stop = new Stop(map["stopNumber"].toString(), map["stopName"].toString());
-                Q_UNUSED(stop);
-                m_stopsDataModel->insert(stop);
-            }
-        }
+    sqlConnector->execute(sqlQuery, args, 2);
+}
 
-        qDebug() << "Read " << recordsRead << " records succeeded";
-    } else {
-        alert(tr("Read records failed: %1").arg(sqlda->error().errorMessage()));
-    }
+void ApplicationUI::searchStopsBuildModel(const QVariant &result)
+{
+	int recordsRead = 0;
+	m_stopsDataModel->clear();
+	if( !result.isNull() ) {
+		QVariantList list = result.value<QVariantList>();
+		recordsRead = list.size();
+		for(int i = 0; i < recordsRead; i++) {
+			QVariantMap map = list.at(i).value<QVariantMap>();
+			Stop *stop = new Stop(map["stopNumber"].toString(), map["stopName"].toString());
+			Q_UNUSED(stop);
+			m_stopsDataModel->insert(stop);
+		}
+	}
+
+	qDebug() << "Read " << recordsRead << " records succeeded";
 }
 
 void ApplicationUI::getNextBusTimes(const QString& stop)
 {
-	SqlDataAccess *sqlda = new SqlDataAccess(DB_PATH);
-
 	QDateTime datetime = QDateTime::currentDateTime();
 	QDate date = datetime.date();
 	QTime time = datetime.time();
@@ -192,11 +206,13 @@ void ApplicationUI::getNextBusTimes(const QString& stop)
 	QString sqlQuery = "SELECT * FROM calendar "
 					"WHERE " + dayOfWeek + " = 1 AND startDate < \'" + yyyymmdd + "\' AND endDate > \'" + yyyymmdd + "\'";
 
-	qDebug() << sqlQuery;
+	// qDebug() << sqlQuery;
 	QList<QString> serviceIds;
 
-	QVariant result = sqlda->execute(sqlQuery);
-	if (!sqlda->hasError()) {
+	DataAccessReply reply = sqlConnector->executeAndWait(sqlQuery);
+	QVariant result;
+	if (!reply.hasError()) {
+		result = reply.result();
         if( !result.isNull() ) {
             QVariantList list = result.value<QVariantList>();
             int recordsRead = list.size();
@@ -206,14 +222,15 @@ void ApplicationUI::getNextBusTimes(const QString& stop)
             }
         }
 	} else {
-        alert(tr("Read records failed: %1").arg(sqlda->error().errorMessage()));
-    }
+		qDebug() << "Reply has error.";
+	}
 
-	qDebug() << serviceIds;
+	// qDebug() << serviceIds;
 
 	sqlQuery = "SELECT * FROM calendar_dates WHERE date = \'" + yyyymmdd + "\'";
-	result = sqlda->execute(sqlQuery);
-	if (!sqlda->hasError()) {
+	reply = sqlConnector->executeAndWait(sqlQuery);
+	if (!reply.hasError()) {
+		result = reply.result();
         if( !result.isNull() ) {
             QVariantList list = result.value<QVariantList>();
             int recordsRead = list.size();
@@ -233,10 +250,10 @@ void ApplicationUI::getNextBusTimes(const QString& stop)
             }
         }
 	} else {
-        alert(tr("Read records failed: %1").arg(sqlda->error().errorMessage()));
-    }
+		qDebug() << "Reply has error.";
+	}
 
-	qDebug() << serviceIds;
+	// qDebug() << serviceIds;
 	QString serviceIdSQLPortion = "";
 	for (int i = 0; i < serviceIds.size(); ++i) {
 		if (i != 0) {
@@ -244,30 +261,32 @@ void ApplicationUI::getNextBusTimes(const QString& stop)
 		}
 		serviceIdSQLPortion += "trips.serviceId = \'" + serviceIds.at(i) + "\'";
 	}
-	qDebug() << serviceIdSQLPortion;
+	// qDebug() << serviceIdSQLPortion;
 
 	sqlQuery = "SELECT trips.routeId, trips.tripHeadSign, stop_times.arrivalTime "
 			"FROM stop_times JOIN trips ON stop_times.tripId = trips.tripId "
 			"WHERE stop_times.stopId = \'" + stop + "\' AND (" + serviceIdSQLPortion + ") "
 			"ORDER BY stop_times.arrivalTime DESC;";
 	qDebug() << sqlQuery;
-	result = sqlda->execute(sqlQuery);
-		if (!sqlda->hasError()) {
-	        if( !result.isNull() ) {
-	            QVariantList list = result.value<QVariantList>();
-	            int recordsRead = list.size();
-	            for(int i = 0; i < recordsRead; i++) {
-	                QVariantMap map = list.at(i).value<QVariantMap>();
-	                StopTime *stopTime = new StopTime(map["routeId"].toString(), map["arrivalTime"].toString());
-	                Q_UNUSED(stopTime);
-	                m_stoptimesDataModel->insert(stopTime);
-	            }
-	            qDebug() << "Read " << recordsRead << " stoptimes records succeeded";
-	        }
-		} else {
-	        alert(tr("Read records failed: %1").arg(sqlda->error().errorMessage()));
-	    }
+	QVariantList args = QList<QVariant>();
 
+	sqlConnector->execute(sqlQuery, args, 3);
+}
+
+void ApplicationUI::getNextBusTimesBuildModel(const QVariant &result)
+{
+	m_stoptimesDataModel->clear();
+	if( !result.isNull() ) {
+		QVariantList list = result.value<QVariantList>();
+		int recordsRead = list.size();
+		for(int i = 0; i < recordsRead; i++) {
+			QVariantMap map = list.at(i).value<QVariantMap>();
+			StopTime *stopTime = new StopTime(map["routeId"].toInt(), map["arrivalTime"].toString());
+			Q_UNUSED(stopTime);
+			m_stoptimesDataModel->insert(stopTime);
+		}
+		qDebug() << "Read " << recordsRead << " stoptimes records succeeded";
+	}
 }
 
 GroupDataModel* ApplicationUI::routesDataModel() const

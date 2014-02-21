@@ -5,6 +5,7 @@
 
 #include <bb/cascades/GroupDataModel>
 #include <bb/data/SqlDataAccess>
+#include <bb/data/SqlConnection>
 
 namespace bb
 {
@@ -41,8 +42,10 @@ public:
     Q_INVOKABLE void listRoutes();
     Q_INVOKABLE void searchStops(const QString &query);
     Q_INVOKABLE void getNextBusTimes(const QString &stop);
+
 private slots:
     void onSystemLanguageChanged();
+    void onLoadResultData(const bb::data::DataAccessReply&);
 private:
     QTranslator* m_pTranslator;
     bb::cascades::LocaleHandler* m_pLocaleHandler;
@@ -50,10 +53,17 @@ private:
     // To alert the user if something has gone wrong
     void alert(const QString &message);
 
+    // Async data access object
+    bb::data::SqlConnection *sqlConnector;
+
     // The getter method for properties
     bb::cascades::GroupDataModel* routesDataModel() const;
     bb::cascades::GroupDataModel* stopsDataModel() const;
     bb::cascades::GroupDataModel* stoptimesDataModel() const;
+
+    void listRoutesBuildModel(const QVariant &result);
+    void searchStopsBuildModel(const QVariant &result);
+    void getNextBusTimesBuildModel(const QVariant &result);
 
     void initRoutesDataModel();
     void initStopsDataModel();
