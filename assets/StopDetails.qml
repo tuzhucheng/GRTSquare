@@ -15,6 +15,10 @@ Page {
         stopDetailsContainer.selectedTab.stopNumber = stopNumber.toString();
     }
     
+    onCreationCompleted: {
+        console.log("stopDetailsPage created");
+    }
+    
     Container {
         id: stopDetailsContainer
         property variant selectedTab;

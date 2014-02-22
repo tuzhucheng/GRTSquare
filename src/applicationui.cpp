@@ -202,6 +202,14 @@ void ApplicationUI::getNextBusTimes(const QString& stop)
 
 	QString dayOfWeek = daysOfWeekMap[date.dayOfWeek()];
 	QString yyyymmdd = date.toString("yyyyMMdd");
+	QString timeMin, timeMax;
+	timeMin = time.toString("hh:mm:ss");
+	if (timeMin <= "21:59:00") {
+		time = time.addSecs(7200);
+		timeMax = time.toString("hh:mm:ss");
+	} else {
+		timeMax = "23:59:00";
+	}
 
 	QString sqlQuery = "SELECT * FROM calendar "
 					"WHERE " + dayOfWeek + " = 1 AND startDate < \'" + yyyymmdd + "\' AND endDate > \'" + yyyymmdd + "\'";
@@ -266,7 +274,7 @@ void ApplicationUI::getNextBusTimes(const QString& stop)
 	sqlQuery = "SELECT trips.routeId, trips.tripHeadSign, stop_times.arrivalTime "
 			"FROM stop_times JOIN trips ON stop_times.tripId = trips.tripId "
 			"WHERE stop_times.stopId = \'" + stop + "\' AND (" + serviceIdSQLPortion + ") "
-			"ORDER BY stop_times.arrivalTime DESC;";
+			"AND stop_times.arrivalTime >= \'" + timeMin + "\'";
 	qDebug() << sqlQuery;
 	QVariantList args = QList<QVariant>();
 
@@ -281,11 +289,12 @@ void ApplicationUI::getNextBusTimesBuildModel(const QVariant &result)
 		int recordsRead = list.size();
 		for(int i = 0; i < recordsRead; i++) {
 			QVariantMap map = list.at(i).value<QVariantMap>();
-			StopTime *stopTime = new StopTime(map["routeId"].toInt(), map["arrivalTime"].toString());
+			StopTime *stopTime = new StopTime(map["routeId"].toInt(), map["arrivalTime"].toString(), map["tripHeadSign"].toString());
 			Q_UNUSED(stopTime);
 			m_stoptimesDataModel->insert(stopTime);
 		}
 		qDebug() << "Read " << recordsRead << " stoptimes records succeeded";
+		emit stopTimesFinishedLoading();
 	}
 }
 

@@ -36,6 +36,9 @@ class ApplicationUI : public QObject
     Q_PROPERTY(bb::cascades::DataModel* stopsDataModel READ stopsDataModel CONSTANT)\
     Q_PROPERTY(bb::cascades::DataModel* stoptimesDataModel READ stoptimesDataModel CONSTANT)\
 
+signals:
+	Q_INVOKABLE void stopTimesFinishedLoading();
+
 public:
     ApplicationUI(bb::cascades::Application *app);
     virtual ~ApplicationUI() { }
