@@ -191,6 +191,8 @@ void ApplicationUI::getNextBusTimes(const QString& stop)
 	QDate date = datetime.date();
 	QTime time = datetime.time();
 
+	bool nextDay = false;
+
 	QHash<int, QString> daysOfWeekMap;
 	daysOfWeekMap[1] = "monday";
 	daysOfWeekMap[2] = "tuesday";
@@ -200,19 +202,20 @@ void ApplicationUI::getNextBusTimes(const QString& stop)
 	daysOfWeekMap[6] = "saturday";
 	daysOfWeekMap[7] = "sunday";
 
-	QString dayOfWeek = daysOfWeekMap[date.dayOfWeek()];
-	QString yyyymmdd = date.toString("yyyyMMdd");
 	QString timeMin, timeMax;
 	timeMin = time.toString("hh:mm:ss");
-	if (timeMin <= "21:59:00") {
-		time = time.addSecs(7200);
-		timeMax = time.toString("hh:mm:ss");
-	} else {
-		timeMax = "23:59:00";
+	time = time.addSecs(10800);
+	timeMax = time.toString("hh:mm:ss");
+	if (timeMax < timeMin) {
+		nextDay = true;
 	}
 
-	QString sqlQuery = "SELECT * FROM calendar "
-					"WHERE " + dayOfWeek + " = 1 AND startDate < \'" + yyyymmdd + "\' AND endDate > \'" + yyyymmdd + "\'";
+	QString dayOfWeek = daysOfWeekMap[date.dayOfWeek()];
+	QString yyyymmdd = date.toString("yyyyMMdd");
+
+	QString sqlQuery = "SELECT serviceId FROM calendar "
+					"WHERE " + dayOfWeek + " = 1 AND "
+					"startDate <= \'" + yyyymmdd + "\' AND endDate >= \'" + yyyymmdd + "\'";
 
 	// qDebug() << sqlQuery;
 	QList<QString> serviceIds;

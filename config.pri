@@ -7,12 +7,14 @@ device {
                  $$quote($$BASEDIR/src/Stop.cpp) \
                  $$quote($$BASEDIR/src/StopTime.cpp) \
                  $$quote($$BASEDIR/src/applicationui.cpp) \
-                 $$quote($$BASEDIR/src/main.cpp)
+                 $$quote($$BASEDIR/src/main.cpp) \
+                 $$quote($$BASEDIR/src/utils.cpp)
 
         HEADERS +=  $$quote($$BASEDIR/src/Route.hpp) \
                  $$quote($$BASEDIR/src/Stop.hpp) \
                  $$quote($$BASEDIR/src/StopTime.hpp) \
-                 $$quote($$BASEDIR/src/applicationui.hpp)
+                 $$quote($$BASEDIR/src/applicationui.hpp) \
+                 $$quote($$BASEDIR/src/utils.hpp)
     }
 
     CONFIG(release, debug|release) {
@@ -20,12 +22,14 @@ device {
                  $$quote($$BASEDIR/src/Stop.cpp) \
                  $$quote($$BASEDIR/src/StopTime.cpp) \
                  $$quote($$BASEDIR/src/applicationui.cpp) \
-                 $$quote($$BASEDIR/src/main.cpp)
+                 $$quote($$BASEDIR/src/main.cpp) \
+                 $$quote($$BASEDIR/src/utils.cpp)
 
         HEADERS +=  $$quote($$BASEDIR/src/Route.hpp) \
                  $$quote($$BASEDIR/src/Stop.hpp) \
                  $$quote($$BASEDIR/src/StopTime.hpp) \
-                 $$quote($$BASEDIR/src/applicationui.hpp)
+                 $$quote($$BASEDIR/src/applicationui.hpp) \
+                 $$quote($$BASEDIR/src/utils.hpp)
     }
 }
 
@@ -35,12 +39,14 @@ simulator {
                  $$quote($$BASEDIR/src/Stop.cpp) \
                  $$quote($$BASEDIR/src/StopTime.cpp) \
                  $$quote($$BASEDIR/src/applicationui.cpp) \
-                 $$quote($$BASEDIR/src/main.cpp)
+                 $$quote($$BASEDIR/src/main.cpp) \
+                 $$quote($$BASEDIR/src/utils.cpp)
 
         HEADERS +=  $$quote($$BASEDIR/src/Route.hpp) \
                  $$quote($$BASEDIR/src/Stop.hpp) \
                  $$quote($$BASEDIR/src/StopTime.hpp) \
-                 $$quote($$BASEDIR/src/applicationui.hpp)
+                 $$quote($$BASEDIR/src/applicationui.hpp) \
+                 $$quote($$BASEDIR/src/utils.hpp)
     }
 }
 

@@ -1,4 +1,5 @@
 #include "StopTime.hpp"
+#include "utils.hpp"
 #include <QDebug>
 #include <QStringList>
 
@@ -12,25 +13,17 @@ StopTime::StopTime(const int route, const QString &time, const QString &headSign
 	, m_time(time)
 	, m_headSign(headSign)
 {
+	m_timeFormatted =  convertTo12HrFormat(m_time, 0);
 }
 
 QString StopTime::time() const
 {
-	// Although QTime has parsing capabilities, there were some issues with parsing certain times
+	return m_time;
+}
 
-	QStringList parts = m_time.split(":");
-	QString ap;
-	int hour = parts.at(0).toInt();
-	QString adjustedHour;
-	if (hour > 12) {
-		ap = "PM";
-		adjustedHour = QString::number(hour-12);
-	} else {
-		ap = "AM";
-		adjustedHour = parts.at(0);
-	}
-
-	return adjustedHour + ":" + parts.at(1) + " " + ap;
+QString StopTime::timeFormatted() const
+{
+	return m_timeFormatted;
 }
 
 int StopTime::route() const

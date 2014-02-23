@@ -10,6 +10,7 @@ class StopTime : public QObject
 	Q_PROPERTY(QString time READ time CONSTANT)
 	Q_PROPERTY(int route READ route CONSTANT)
 	Q_PROPERTY(QString headSign READ headSign CONSTANT)
+	Q_PROPERTY(QString timeFormatted READ timeFormatted CONSTANT)
 
 public:
 	StopTime(QObject *parent = 0);
@@ -18,10 +19,12 @@ public:
 	QString time() const;
 	int route() const;
 	QString headSign() const;
+	QString timeFormatted() const;
 
 private:
 	int m_route;
 	QString m_time;
+	QString m_timeFormatted;
 	QString m_headSign;
 };
 

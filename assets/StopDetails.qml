@@ -45,6 +45,7 @@ Page {
                     var currentContainer = stopDetailsCurrent.createObject();
                     stopDetailsContainer.add(currentContainer);
                     stopDetailsContainer.selectedTab = currentContainer;
+                    stopDetailsContainer.selectedTab.stopNumber = stopNumber.toString();
                 } else if (selectedOption == futureStopTimes) {
                     console.log("future selected");
                     stopDetailsContainer.remove(stopDetailsContainer.selectedTab);

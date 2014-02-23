@@ -3,16 +3,20 @@ import QtQuick 1.0
 
 Container {
     id: stopDetailsCurrentContainer
+    objectName: stopDetailsCurrentContainer
     
     property string stopNumber
     
     Label {
-        text: qsTr("Current time:")
-    }
-    Label {
         id: currentTime
-        text: Qt.formatDateTime(new Date(), "hh:mm:ss")
+        text: Qt.formatDateTime(new Date(), "hh:mm:ss AP")
+        horizontalAlignment: HorizontalAlignment.Center
+        textStyle {
+            base: SystemDefaults.TextStyles.BigText
+            color: Color.DarkCyan
+        }
     }
+    
     ActivityIndicator {
         id: stopDetailsCurrentLoadIndicator
         horizontalAlignment: HorizontalAlignment.Center
@@ -31,7 +35,7 @@ Container {
                 type: "item"
                 
                 StandardListItem {
-                    title: qsTr("%1").arg(ListItemData.time)
+                    title: qsTr("%1").arg(ListItemData.timeFormatted)
                     description: qsTr("%1").arg(ListItemData.headSign)
                 }
             }
@@ -51,6 +55,8 @@ Container {
     function onStopTimesFinishedLoading() {
         stopDetailsCurrentLoadIndicator.stop();
         stopDetailsCurrentListView.opacity = 1;
+        console.log("Number of routes found: " + app.stoptimesDataModel.childCount(stopDetailsCurrentListView.rootIndexPath));
+        // stopDetailsCurrentListView.scrollToItem([1], ScrollAnimation.Default);
     }
     
     attachedObjects: [
@@ -59,7 +65,7 @@ Container {
             running: true
             repeat: true
             onTriggered: {
-                currentTime.text = Qt.formatDateTime(new Date(), "hh:mm:ss")
+                currentTime.text = Qt.formatDateTime(new Date(), "hh:mm:ss AP")
             }
         }
     ]
