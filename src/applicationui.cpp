@@ -120,7 +120,10 @@ void ApplicationUI::onLoadResultData(const DataAccessReply& reply)
 			searchStopsBuildModel(result);
 		} else if (reply.id() == 3) {
 			result = reply.result();
-			getNextBusTimesBuildModel(result);
+			getNextBusTimesBuildModel(result, 0);
+		} else if (reply.id() == 4) {
+			result = reply.result();
+			getNextBusTimesBuildModel(result, 1);
 		}
 	}
 }
@@ -185,9 +188,21 @@ void ApplicationUI::searchStopsBuildModel(const QVariant &result)
 	qDebug() << "Read " << recordsRead << " records succeeded";
 }
 
+void ApplicationUI::getNextBusTimes(const QString &stop, const QString &datetime)
+{
+	QDateTime parsedDateTime = QDateTime::fromString(datetime, "yyyyMMdd hh:mm:ss");
+	qDebug() << "Parsed date time is valid: " << parsedDateTime.isValid();
+	getNextBusTimes(stop, parsedDateTime, 1);
+}
+
 void ApplicationUI::getNextBusTimes(const QString& stop)
 {
 	QDateTime datetime = QDateTime::currentDateTime();
+	getNextBusTimes(stop, datetime, 0);
+}
+
+void ApplicationUI::getNextBusTimes(const QString &stop, const QDateTime &datetime, const int origin)
+{
 	QDate date = datetime.date();
 	QTime time = datetime.time();
 
@@ -281,10 +296,15 @@ void ApplicationUI::getNextBusTimes(const QString& stop)
 	qDebug() << sqlQuery;
 	QVariantList args = QList<QVariant>();
 
-	sqlConnector->execute(sqlQuery, args, 3);
+	if (origin == 0) {
+		sqlConnector->execute(sqlQuery, args, 3);
+	} else if (origin == 1) {
+		sqlConnector->execute(sqlQuery, args, 4);
+	}
+
 }
 
-void ApplicationUI::getNextBusTimesBuildModel(const QVariant &result)
+void ApplicationUI::getNextBusTimesBuildModel(const QVariant &result, const int origin)
 {
 	m_stoptimesDataModel->clear();
 	if( !result.isNull() ) {
@@ -297,7 +317,11 @@ void ApplicationUI::getNextBusTimesBuildModel(const QVariant &result)
 			m_stoptimesDataModel->insert(stopTime);
 		}
 		qDebug() << "Read " << recordsRead << " stoptimes records succeeded";
-		emit stopTimesFinishedLoading();
+		if (origin == 0) {
+			emit stopTimesFinishedLoadingCurrent();
+		} else if (origin == 1) {
+			emit stopTimesFinishedLoadingFuture();
+		}
 	}
 }
 
@@ -314,6 +338,28 @@ GroupDataModel* ApplicationUI::stopsDataModel() const
 GroupDataModel* ApplicationUI::stoptimesDataModel() const
 {
 	return m_stoptimesDataModel;
+}
+
+QDateTime ApplicationUI::getMaxDateTime()
+{
+	const QString sqlQuery = "SELECT MAX(endDate) FROM calendar";
+	    QVariantList args = QList<QVariant>();
+
+	DataAccessReply reply = sqlConnector->executeAndWait(sqlQuery);
+	QVariant result;
+	if (!reply.hasError()) {
+		result = reply.result();
+		if( !result.isNull() ) {
+			QVariantList list = result.value<QVariantList>();
+			QVariantMap map = list.at(0).value<QVariantMap>();
+			return QDateTime::fromString(map["MAX(endDate)"].toString(), "yyyyMMdd");
+		}
+	} else {
+		qDebug() << "getMaxDateTime query has error.";
+	}
+
+	QDateTime* nullDateTime = new QDateTime();
+	return *nullDateTime;
 }
 
 void ApplicationUI::onSystemLanguageChanged()

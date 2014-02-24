@@ -3,9 +3,12 @@ import QtQuick 1.0
 
 Container {
     id: stopDetailsCurrentContainer
-    objectName: stopDetailsCurrentContainer
     
     property string stopNumber
+    
+    layout: StackLayout {
+        orientation: LayoutOrientation.TopToBottom
+    }
     
     Label {
         id: currentTime
@@ -23,6 +26,22 @@ Container {
         minHeight: 150
         minWidth: 150
     }
+    
+    ScrollView {
+        bottomMargin: 25.0
+        scrollViewProperties {
+            scrollMode: ScrollMode.Horizontal
+        }
+        Container {
+            id: routeScrollIndices
+            layout: StackLayout {
+                orientation: LayoutOrientation.LeftToRight
+            }
+            leftPadding: 25.0
+            rightPadding: 25.0
+        }
+    }
+    
     ListView {
         id: stopDetailsCurrentListView
         
@@ -43,20 +62,27 @@ Container {
     }
     
     onStopNumberChanged: {
+        console.log("onStopNumberChanged");
         stopDetailsCurrentLoadIndicator.start();
         app.getNextBusTimes(stopDetailsCurrentContainer.stopNumber);
     }
     
     onCreationCompleted: {
         console.log("stopDetailsCurrent created.");
-        app.stopTimesFinishedLoading.connect(onStopTimesFinishedLoading);
+        app.stopTimesFinishedLoadingCurrent.connect(onStopTimesFinishedLoading);
     }
     
     function onStopTimesFinishedLoading() {
         stopDetailsCurrentLoadIndicator.stop();
         stopDetailsCurrentListView.opacity = 1;
-        console.log("Number of routes found: " + app.stoptimesDataModel.childCount(stopDetailsCurrentListView.rootIndexPath));
-        // stopDetailsCurrentListView.scrollToItem([1], ScrollAnimation.Default);
+        var numberOfRoutes = app.stoptimesDataModel.childCount(stopDetailsCurrentListView.rootIndexPath)
+        console.log("Number of routes found: " + numberOfRoutes);
+        for (var i = 0; i < numberOfRoutes; i++) {
+            var createdScrollIndex = routeNumberLabel.createObject();
+            createdScrollIndex.routeNumber = app.stoptimesDataModel.data([i]).toString();
+            createdScrollIndex.index = i;
+            routeScrollIndices.add(createdScrollIndex);
+        }
     }
     
     attachedObjects: [
@@ -66,6 +92,42 @@ Container {
             repeat: true
             onTriggered: {
                 currentTime.text = Qt.formatDateTime(new Date(), "hh:mm:ss AP")
+            }
+        },
+        ComponentDefinition {
+            id: routeNumberLabel      
+            Container {
+                id: routeNumberLabelContainer
+                minWidth: 100
+                background: Color.DarkCyan
+                leftMargin: 20.0
+                rightMargin: 20.0
+                
+                property string routeNumber  
+                property int index
+                
+                onTouch: {
+                    if (event.isUp()) {
+                        stopDetailsCurrentListView.scrollToItem([index], ScrollAnimation.Default);
+                    }
+                }
+                
+                Label {
+                    text: routeNumberLabelContainer.routeNumber
+                    horizontalAlignment: HorizontalAlignment.Center
+                    textStyle.textAlign: TextAlign.Center
+                    
+                    textStyle {
+                        base: scrollIndexTextStyle.style
+                    }
+                }
+                attachedObjects: [
+                    TextStyleDefinition {
+                        id: scrollIndexTextStyle
+                        base: SystemDefaults.TextStyles.BigText
+                        color: Color.White
+                    }
+                ]
             }
         }
     ]

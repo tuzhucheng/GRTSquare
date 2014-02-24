@@ -37,7 +37,8 @@ class ApplicationUI : public QObject
     Q_PROPERTY(bb::cascades::DataModel* stoptimesDataModel READ stoptimesDataModel CONSTANT)\
 
 signals:
-	Q_INVOKABLE void stopTimesFinishedLoading();
+	Q_INVOKABLE void stopTimesFinishedLoadingCurrent();
+    Q_INVOKABLE void stopTimesFinishedLoadingFuture();
 
 public:
     ApplicationUI(bb::cascades::Application *app);
@@ -45,6 +46,8 @@ public:
     Q_INVOKABLE void listRoutes();
     Q_INVOKABLE void searchStops(const QString &query);
     Q_INVOKABLE void getNextBusTimes(const QString &stop);
+    Q_INVOKABLE void getNextBusTimes(const QString &stop, const QString &datetime);
+    Q_INVOKABLE QDateTime getMaxDateTime();
 
 private slots:
     void onSystemLanguageChanged();
@@ -64,9 +67,11 @@ private:
     bb::cascades::GroupDataModel* stopsDataModel() const;
     bb::cascades::GroupDataModel* stoptimesDataModel() const;
 
+    void getNextBusTimes(const QString &stop, const QDateTime &datetime, const int origin);
+
     void listRoutesBuildModel(const QVariant &result);
     void searchStopsBuildModel(const QVariant &result);
-    void getNextBusTimesBuildModel(const QVariant &result);
+    void getNextBusTimesBuildModel(const QVariant &result, const int origin);
 
     void initRoutesDataModel();
     void initStopsDataModel();

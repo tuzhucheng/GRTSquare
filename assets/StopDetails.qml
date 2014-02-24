@@ -21,6 +21,8 @@ Page {
     
     Container {
         id: stopDetailsContainer
+        topPadding: 25.0
+        
         property variant selectedTab;
         
         SegmentedControl {
@@ -36,7 +38,7 @@ Page {
             onCreationCompleted: {
                 var currentContainer = stopDetailsCurrent.createObject();
                 stopDetailsContainer.add(currentContainer);
-                stopDetailsContainer.selectedTab = currentContainer;                
+                stopDetailsContainer.selectedTab = currentContainer;            
             }
             onSelectedOptionChanged: {
                 if (selectedOption == currentStopTimes) {
@@ -52,6 +54,7 @@ Page {
                     var futureContainer = stopDetailsFuture.createObject();
                     stopDetailsContainer.add(futureContainer);
                     stopDetailsContainer.selectedTab = futureContainer;
+                    stopDetailsContainer.selectedTab.stopNumber = stopNumber.toString();
                 }
             }
         }
