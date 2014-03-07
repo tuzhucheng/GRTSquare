@@ -1,6 +1,8 @@
 1
-27
+28
 constants.js
+Current.qml
+Future.qml
 grtdata/grt.db
 grtdata/gtfs/agency.csv
 grtdata/gtfs/calendar.csv
@@ -15,7 +17,10 @@ grtdata/routes.csv
 grtdata/sqlite_populate.py
 grtdata/stops.csv
 Home.qml
+icons/ic_browser.png
+icons/ic_favorite.png
 icons/ic_home.png
+icons/ic_next.png
 icons/ic_routes.png
 icons/ic_settings.png
 icons/ic_stops.png
@@ -23,7 +28,3 @@ main.qml
 RouteDetails.qml
 Routes.qml
 Settings.qml
-StopDetails.qml
-StopDetailsCurrent.qml
-StopDetailsFuture.qml
-Stops.qml

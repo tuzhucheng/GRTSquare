@@ -3,6 +3,7 @@ import "constants.js" as Constants
 
 TabbedPane {
     id: root
+    showTabsOnActionBar: true
     
     Tab {
         title: Constants.HOME
@@ -10,18 +11,13 @@ TabbedPane {
         Home {}
     }
     Tab {
-        title: Constants.ROUTES
-        imageSource: "icons/ic_routes.png"
-        Routes {}
+        title: qsTr("Current")
+        imageSource: "icons/ic_browser.png"
+        Current {}
     }
     Tab {
-        title: Constants.STOPS
-        imageSource: "icons/ic_stops.png"
-        Stops {}
-    }
-    Tab {
-        title: Constants.SETTINGS
-        imageSource: "icons/ic_settings.png"
-        Settings {}
+        title: qsTr("Future")
+        imageSource: "icons/ic_next.png"
+        Future {}
     }
 }

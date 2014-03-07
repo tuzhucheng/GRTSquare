@@ -13,32 +13,22 @@
     </message>
 </context>
 <context>
-    <name>Routes</name>
+    <name>Current</name>
     <message>
-        <source>%1 - %2</source>
+        <source>Current Bus Times</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>StopDetails</name>
-    <message>
-        <source>Future</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Current</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>StopDetailsCurrent</name>
     <message>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>StopDetailsFuture</name>
+    <name>Future</name>
+    <message>
+        <source>Future Bus Times</source>
+        <translation type="unfinished"></translation>
+    </message>
     <message>
         <source>Date</source>
         <translation type="unfinished"></translation>
@@ -52,18 +42,32 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source></source>
-        <translation></translation>
-    </message>
-    <message>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>Stops</name>
+    <name>Routes</name>
     <message>
-        <source>%1</source>
+        <source>%1 - %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>StopDetailsFuture</name>
+    <message>
+        <source></source>
+        <translation></translation>
+    </message>
+</context>
+<context>
+    <name>main</name>
+    <message>
+        <source>Current</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Future</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
