@@ -22,6 +22,11 @@ using namespace bb::data;
 using namespace bb::system;
 
 const QString DB_PATH = "app/native/assets/grtdata/grt.db";
+const int ORIGIN_CURRENT = 0;
+const int ORIGIN_FUTURE = 1;
+const int SEARCH_STOPS_QUERY = 2;
+const int NEXT_BUS_TIMES_CURRENT_QUERY = 3;
+const int NEXT_BUS_TIMES_FUTURE_QUERY = 4;
 
 ApplicationUI::ApplicationUI(bb::cascades::Application *app) :
         QObject(app)
@@ -115,15 +120,15 @@ void ApplicationUI::onLoadResultData(const DataAccessReply& reply)
 		if (reply.id() == 1) {
 			result = reply.result();
 			listRoutesBuildModel(result);
-		} else if (reply.id() == 2) {
+		} else if (reply.id() == SEARCH_STOPS_QUERY) {
 			result = reply.result();
 			searchStopsBuildModel(result);
-		} else if (reply.id() == 3) {
+		} else if (reply.id() == NEXT_BUS_TIMES_CURRENT_QUERY) {
 			result = reply.result();
-			getNextBusTimesBuildModel(result, 0);
-		} else if (reply.id() == 4) {
+			getNextBusTimesBuildModel(result, ORIGIN_CURRENT);
+		} else if (reply.id() == NEXT_BUS_TIMES_FUTURE_QUERY) {
 			result = reply.result();
-			getNextBusTimesBuildModel(result, 1);
+			getNextBusTimesBuildModel(result, ORIGIN_FUTURE);
 		}
 	}
 }
@@ -167,7 +172,7 @@ void ApplicationUI::searchStops(const QString& query)
     		" WHERE stopNumber LIKE \'" + query + "%\' ORDER BY stopNumber DESC";
     QVariantList args = QList<QVariant>();
 
-    sqlConnector->execute(sqlQuery, args, 2);
+    sqlConnector->execute(sqlQuery, args, SEARCH_STOPS_QUERY);
 }
 
 void ApplicationUI::searchStopsBuildModel(const QVariant &result)
@@ -192,13 +197,13 @@ void ApplicationUI::getNextBusTimes(const QString &stop, const QString &datetime
 {
 	QDateTime parsedDateTime = QDateTime::fromString(datetime, "yyyyMMdd hh:mm:ss");
 	qDebug() << "Parsed date time is valid: " << parsedDateTime.isValid();
-	getNextBusTimes(stop, parsedDateTime, 1);
+	getNextBusTimes(stop, parsedDateTime, ORIGIN_FUTURE);
 }
 
 void ApplicationUI::getNextBusTimes(const QString& stop)
 {
 	QDateTime datetime = QDateTime::currentDateTime();
-	getNextBusTimes(stop, datetime, 0);
+	getNextBusTimes(stop, datetime, ORIGIN_CURRENT);
 }
 
 void ApplicationUI::getNextBusTimes(const QString &stop, const QDateTime &datetime, const int origin)
@@ -296,10 +301,10 @@ void ApplicationUI::getNextBusTimes(const QString &stop, const QDateTime &dateti
 	qDebug() << sqlQuery;
 	QVariantList args = QList<QVariant>();
 
-	if (origin == 0) {
-		sqlConnector->execute(sqlQuery, args, 3);
-	} else if (origin == 1) {
-		sqlConnector->execute(sqlQuery, args, 4);
+	if (origin == ORIGIN_CURRENT) {
+		sqlConnector->execute(sqlQuery, args, NEXT_BUS_TIMES_CURRENT_QUERY);
+	} else if (origin == ORIGIN_FUTURE) {
+		sqlConnector->execute(sqlQuery, args, NEXT_BUS_TIMES_FUTURE_QUERY);
 	}
 
 }

@@ -58,6 +58,11 @@ CREATE_FAVORITE_STOPS_TABLE_SQL = """CREATE TABLE favorite_stops
     stopId INTEGER,
     routeId INTEGER);"""
 
+CREATE_GLOBAL_CONFIGS_TABLE_SQL = """CREATE TABLE global_configs
+    (_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    configName VARCHAR,
+    configValue VARCHAR);"""
+
 # Column Ids
 # Stops table
 STOPS_ID_COL_ID = -1
@@ -74,6 +79,7 @@ def createTables(cursor):
     cursor.execute(CREATE_TRIPS_TABLE_SQL)
     cursor.execute(CREATE_STOP_TIMES_TABLE_SQL)
     cursor.execute(CREATE_FAVORITE_STOPS_TABLE_SQL)
+    cursor.execute(CREATE_GLOBAL_CONFIGS_TABLE_SQL)
 
 def processHeader(csv):
     header = csv.readline()
@@ -216,6 +222,16 @@ def main():
 
     connection.commit()
 
+    # populate data in global configuration table
+    INSERT_INTO_GLOBAL_CONFIGS_SQL = """INSERT INTO global_configs (configName, configValue) VALUES (?, ?)"""
+    result = cursor.execute("SELECT MAX(endDate) FROM calendar")
+    args = ("endDate", result.fetchone()[0])
+    cursor.execute(INSERT_INTO_GLOBAL_CONFIGS_SQL, args)
+    result = cursor.execute("SELECT MIN(startDate) FROM calendar")
+    args = ("startDate", result.fetchone()[0])
+    cursor.execute(INSERT_INTO_GLOBAL_CONFIGS_SQL, args)
+
+    connection.commit()
     connection.close()
 
 if __name__ == "__main__":
