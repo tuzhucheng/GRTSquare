@@ -75,15 +75,6 @@ NavigationPane {
                 }
             }
         }
-        
-/*        actions: ActionItem {
-            title: qsTr("Second page")
-            ActionBar.placement: ActionBarPlacement.OnBar
-            
-            onTriggered: {
-                navigationPane.push(secondPageDefinition.createObject());
-            }
-        }*/
     }
     
     attachedObjects: [
@@ -118,10 +109,11 @@ NavigationPane {
                 
                 function onStopTimesFinishedLoading() {
                     futureTimesLoadIndicator.stop();
+                    futureTimesListView.opacity = 1;
                     var numberOfRoutes = app.stoptimesDataModel.childCount(futureTimesListView.rootIndexPath)
                     console.log("Number of routes found: " + numberOfRoutes);
                     for (var i = 0; i < numberOfRoutes; i++) {
-                        var createdScrollIndex = routeNumberLabel.createObject();
+                        var createdScrollIndex = routeNumberLabelFuture.createObject();
                         createdScrollIndex.routeNumber = app.stoptimesDataModel.data([i]).toString();
                         createdScrollIndex.index = i;
                         futureRouteScrollIndices.add(createdScrollIndex);
@@ -177,6 +169,8 @@ NavigationPane {
                         
                         dataModel: app.stoptimesDataModel
                         
+                        opacity: 0
+                        
                         listItemComponents: [
                             ListItemComponent {
                                 type: "item"
@@ -190,11 +184,20 @@ NavigationPane {
                     }                    
                 }
                 
+                actions: ActionItem {
+                    title: qsTr("Add to Favourites")
+                    ActionBar.placement: ActionBarPlacement.OnBar
+                    
+                    onTriggered: {
+                        //navigationPane.push(secondPageDefinition.createObject());
+                    }
+                }
+                
                 attachedObjects: [
                     ComponentDefinition {
-                        id: routeNumberLabel      
+                        id: routeNumberLabelFuture      
                         Container {
-                            id: routeNumberLabelContainer
+                            id: routeNumberLabelFutureContainer
                             minWidth: 100
                             background: Color.DarkCyan
                             leftMargin: 20.0
@@ -205,12 +208,12 @@ NavigationPane {
                             
                             onTouch: {
                                 if (event.isUp()) {
-                                    stopDetailsFutureListView.scrollToItem([index], ScrollAnimation.Default);
+                                    futureTimesListView.scrollToItem([index], ScrollAnimation.Default);
                                 }
                             }
                             
                             Label {
-                                text: routeNumberLabelContainer.routeNumber
+                                text: routeNumberLabelFutureContainer.routeNumber
                                 horizontalAlignment: HorizontalAlignment.Center
                                 textStyle.textAlign: TextAlign.Center
                                 

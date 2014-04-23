@@ -99,10 +99,10 @@ NavigationPane {
                     var numberOfRoutes = app.stoptimesDataModel.childCount(currentTimesListView.rootIndexPath)
                     console.log("Number of routes found: " + numberOfRoutes);
                     for (var i = 0; i < numberOfRoutes; i++) {
-                        var createdScrollIndex = routeNumberLabel.createObject();
+                        var createdScrollIndex = routeNumberLabelCurrent.createObject();
                         createdScrollIndex.routeNumber = app.stoptimesDataModel.data([i]).toString();
                         createdScrollIndex.index = i;
-                        routeScrollIndices.add(createdScrollIndex);
+                        currentRouteScrollIndices.add(createdScrollIndex);
                     }
                 }
                 
@@ -169,9 +169,9 @@ NavigationPane {
                         }
                     },
                     ComponentDefinition {
-                        id: routeNumberLabel      
+                        id: routeNumberLabelCurrent      
                         Container {
-                            id: routeNumberLabelContainer
+                            id: routeNumberLabelCurrentContainer
                             minWidth: 100
                             background: Color.DarkCyan
                             leftMargin: 20.0
@@ -187,7 +187,7 @@ NavigationPane {
                             }
                             
                             Label {
-                                text: routeNumberLabelContainer.routeNumber
+                                text: routeNumberLabelCurrentContainer.routeNumber
                                 horizontalAlignment: HorizontalAlignment.Center
                                 textStyle.textAlign: TextAlign.Center
                                 

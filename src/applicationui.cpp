@@ -291,7 +291,7 @@ void ApplicationUI::getNextBusTimes(const QString &stop, const QDateTime &dateti
 
 	sqlQuery = "SELECT trips.routeId, trips.tripHeadSign, stop_times.arrivalTime "
 			"FROM stop_times JOIN trips ON stop_times.tripId = trips.tripId "
-			"WHERE stop_times.stopId = \'" + stop + "\' AND (" + serviceIdSQLPortion + ") "
+			"WHERE stop_times.stopId = " + stop + " AND (" + serviceIdSQLPortion + ") "
 			"AND stop_times.arrivalTime >= \'" + timeMin + "\'";
 	qDebug() << sqlQuery;
 	QVariantList args = QList<QVariant>();

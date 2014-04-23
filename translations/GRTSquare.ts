@@ -45,6 +45,10 @@
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Add to Favourites</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Routes</name>

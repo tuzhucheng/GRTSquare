@@ -30,5 +30,6 @@ x86/
 # GRT CSVs and database
 assets/grtdata/*.csv
 assets/grtdata/gtfs/*.csv
+assets/grtdata/gtfs/*.txt
 assets/grtdata/*.db
 
