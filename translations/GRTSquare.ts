@@ -13,20 +13,23 @@
     </message>
 </context>
 <context>
-    <name>Current</name>
-    <message>
-        <source>Current Bus Times</source>
-        <translation type="unfinished"></translation>
-    </message>
+    <name>CurrentStopTimesPage</name>
     <message>
         <source>%1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>Future</name>
+    <name>FutureStopTimesPage</name>
     <message>
-        <source>Future Bus Times</source>
+        <source>%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>FutureTimeSelection</name>
+    <message>
+        <source>Select future time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -37,23 +40,15 @@
         <source>Time</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>SearchStops</name>
     <message>
-        <source>Search</source>
+        <source>Search for stops</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>%1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Add to Favourites</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>Routes</name>
-    <message>
-        <source>%1 - %2</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -65,13 +60,9 @@
     </message>
 </context>
 <context>
-    <name>main</name>
+    <name>StopPage</name>
     <message>
-        <source>Current</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Future</source>
+        <source>Add to Favourites</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

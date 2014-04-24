@@ -11,13 +11,8 @@ TabbedPane {
         Home {}
     }
     Tab {
-        title: qsTr("Current")
-        imageSource: "icons/ic_browser.png"
-        Current {}
-    }
-    Tab {
-        title: qsTr("Future")
-        imageSource: "icons/ic_next.png"
-        Future {}
+        title: qsTr(Constants.SEARCH)
+        imageSource: "icons/ic_search.png"
+        SearchStops {}
     }
 }

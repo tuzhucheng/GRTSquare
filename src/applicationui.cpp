@@ -12,6 +12,7 @@
 #include <bb/data/SqlConnection>
 #include <bb/data/DataAccessError>
 #include <bb/system/SystemDialog>
+#include <bb/system/SystemToast>
 
 #include <QtSql/QtSql>
 #include <QDebug>
@@ -27,6 +28,9 @@ const int ORIGIN_FUTURE = 1;
 const int SEARCH_STOPS_QUERY = 2;
 const int NEXT_BUS_TIMES_CURRENT_QUERY = 3;
 const int NEXT_BUS_TIMES_FUTURE_QUERY = 4;
+
+const QString MIN_DATE = "20140106";
+const QString MAX_DATE = "20140622";
 
 ApplicationUI::ApplicationUI(bb::cascades::Application *app) :
         QObject(app)
@@ -232,6 +236,14 @@ void ApplicationUI::getNextBusTimes(const QString &stop, const QDateTime &dateti
 
 	QString dayOfWeek = daysOfWeekMap[date.dayOfWeek()];
 	QString yyyymmdd = date.toString("yyyyMMdd");
+
+	if (yyyymmdd < MIN_DATE || yyyymmdd > MAX_DATE)
+	{
+		SystemToast *toast = new SystemToast(this);
+	    toast->setBody("OUT OF RANGE :(");
+	    toast->setPosition(SystemUiPosition::MiddleCenter);
+	    toast->show();
+	}
 
 	QString sqlQuery = "SELECT serviceId FROM calendar "
 					"WHERE " + dayOfWeek + " = 1 AND "

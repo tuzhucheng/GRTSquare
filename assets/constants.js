@@ -2,7 +2,4 @@
 // .pragma library
 
 var HOME = "Home";
-var MAP = "Map";
-var ROUTES = "Routes";
-var SETTINGS = "Settings";
-var STOPS = "Stops";
+var SEARCH = "Search";
